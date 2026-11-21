@@ -1,0 +1,44 @@
+{
+  "name": "harrwama-mind-admin",
+  "productName": "Harrwama Mind Admin",
+  "version": "1.0.0",
+  "description": "Harrwama Mind Admin : gestion du site, des commandes et de la messagerie",
+  "main": "main.js",
+  "author": "Harrwama Mind",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/run-tests.js",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "com.harrwama.mind.admin",
+    "productName": "Harrwama Mind Admin",
+    "copyright": "Harrwama Mind",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "preload.js", "src/**/*", "renderer/**/*", "build/icon.png", "package.json"],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Harrwama Mind Admin",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "uninstallDisplayName": "Harrwama Mind Admin",
+      "language": "1036",
+      "runAfterFinish": true,
+      "artifactName": "HarrwamaMindAdmin-Setup-${version}.${ext}"
+    }
+  }
+}

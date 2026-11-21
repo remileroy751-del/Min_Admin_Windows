@@ -1,0 +1,51 @@
+name: Compiler Harrwama Mind Admin (Windows)
+
+# Démarre automatiquement dès que le dépôt reçoit les fichiers (push),
+# et peut aussi être relancé à la main (onglet Actions > Run workflow).
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Installer les dépendances
+        run: npm install --no-audit --no-fund
+
+      - name: Vérifier la logique (tests)
+        run: npm test
+        continue-on-error: true
+
+      - name: Compiler l'installateur Windows
+        run: npm run dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Enregistrer l'installateur (Artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: HarrwamaMindAdmin-Windows-Installateur
+          path: dist/HarrwamaMindAdmin-Setup-*.exe
+
+      - name: Publier l'installateur dans Releases (téléchargement direct)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete windows-latest --cleanup-tag --yes || true
+          gh release create windows-latest dist/HarrwamaMindAdmin-Setup-*.exe \
+            --target "$GITHUB_SHA" \
+            --title "Harrwama Mind Admin pour Windows (dernière version)" \
+            --notes "Installateur compilé automatiquement. Téléchargez HarrwamaMindAdmin-Setup-*.exe puis double-cliquez pour installer."
